@@ -10,6 +10,8 @@ local config = {}
 
 local daemon_job = nil
 
+--- Kill the neuron daemon.
+-- Expored because we need to call it via an autocmd
 nerveux.kill_daemon = function()
     if daemon_job then
         l.debug("Daemon job was started, killing pid:" .. daemon_job.pid)
@@ -22,6 +24,9 @@ nerveux.kill_daemon = function()
     end
 end
 
+--- Starts the neuron daemon if not already launched (by us or prior)
+-- Uses plenary.job to create the job and stores the handle in the `daemon_job` global
+-- variable.
 local function start_daemon()
     u.is_process_running(
         "neuron",
@@ -62,6 +67,7 @@ local function start_daemon()
         end
     )
 end
+
 
 nerveux.setup = function(opts)
     if config.loaded then
