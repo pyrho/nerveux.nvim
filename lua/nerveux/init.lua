@@ -3,30 +3,35 @@ local nerveux = {}
 local Job = require "plenary.job"
 local fzf = require("fzf")
 
-local utils = require "nerveux.utils"
+local u = require "nerveux.utils"
+local l = require "nerveux.log"
 
 local config = {}
 
-nerveux.kill_daemon = function()
-    -- This does not work, I think because it's not doing its thing
-    -- fast enough
-    -- daemon_job:shutdown()
+local daemon_job = nil
 
-    Job:new(
-        {
-            command = "pkill",
-            args = {"neuron"}
-        }
-    ):sync()
+nerveux.kill_daemon = function()
+    if daemon_job then
+        l.debug("Daemon job was started, killing pid:" .. daemon_job.pid)
+        Job:new(
+            {
+                command = "kill",
+                args = {"-9", daemon_job.pid}
+            }
+        ):sync()
+    end
 end
 
 local function start_daemon()
-    utils.is_process_running(
+    u.is_process_running(
         "neuron",
         function(e, is_running)
+            if e then
+                l.error(e)
+            end
+
             if not is_running then
-                print("not running, starting daemon")
-                local daemon_job =
+                daemon_job =
                     Job:new(
                     {
                         command = config.neuron_cmd,
@@ -35,8 +40,13 @@ local function start_daemon()
                             "-w"
                         },
                         cwd = config.neuron_dir,
+                        on_start = function()
+                            l.debug("Daemon started")
+                        end
                     }
                 )
+
+                l.debug("Daemon is not running, starting...")
                 daemon_job:start()
 
                 if config.kill_daemon_at_exit then
@@ -46,6 +56,8 @@ local function start_daemon()
                         end
                     )()
                 end
+            else
+                l.debug("Daemon is already running, not starting")
             end
         end
     )
@@ -68,7 +80,6 @@ nerveux.setup = function(opts)
     config.kill_daemon_at_exit = opts.dangerously_kill_daemon_at_exit or false
 
     if opts.start_daemon then
-        print("start daemon requested...")
         start_daemon()
     end
 
