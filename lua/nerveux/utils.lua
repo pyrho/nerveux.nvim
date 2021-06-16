@@ -22,4 +22,14 @@ utils.is_process_running = function(process_name, cb)
     )
 end
 
+
+utils.append_slash = function(input_path)
+    local ending = "/"
+    if (input_path:sub(-#ending) == ending) then
+        return input_path .. "/"
+    else
+        return input_path
+    end
+end
+
 return utils

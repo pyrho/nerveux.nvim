@@ -18,15 +18,14 @@ plugins !)
 ### Plugin dependencies
 
 ```vimL
-" vim-plug 
-Plug 'vijaymarupudi/nvim-fzf'
+" Used for the floating window/search/fzf 
+Plug 'ray-x/guihua.lua'
+
+" Used for plenary.job
 Plug 'nvim-lua/plenary.nvim'
 ```
 
 ### External dependencies
-
-- [fzf](https://github.com/junegunn/fzf)
-- [bat](https://github.com/sharkdp/bat)
 - [neuron](http://neuron.zettel.page)
 
 ## Learning resources
