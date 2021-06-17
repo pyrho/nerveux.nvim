@@ -8,6 +8,7 @@ A neovim lua plugin to interact with [neuron](http://neuron.zettel.page).
 ```vimL
 " vim-plug 
 Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'pyrho/nerveux.nvim'
 ```
@@ -43,7 +44,7 @@ require 'nerveux'.setup {
     create_default_mappings = true,
 
     -- The Highlight Group used for the inline zettel titles (default: Special)
-    virtual_title_hl = Special
+    virtual_title_hl = "Special"
 
     -- `kill -9` the pid of the daemon at exit (VimPreLeave), only valid is
     -- start_daemon is true (default: false)
@@ -53,14 +54,11 @@ require 'nerveux'.setup {
 
 ## Default Mappings
 
-gzz
-: Search all your zettels
+`gzz`: Search all your zettels
 
-gzn
-: Create a new zettel
+`gzn`: Create a new zettel
 
-<CR>
-: Follow link under cursor
+`<CR>`: Follow link under cursor
 
 ## Motivation
 
