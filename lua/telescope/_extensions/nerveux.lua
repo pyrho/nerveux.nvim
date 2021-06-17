@@ -41,7 +41,7 @@ local function search_zettel(opts)
                 entry["Title"]
             }
         end
-        deets.value = deets["Path"]
+        deets.value = vim.fn.resolve(string.format("%s/%s", nerveux_config.neuron_dir, deets["Path"]))
         deets.ordinal = deets["Title"]
         return deets
     end
