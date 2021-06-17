@@ -163,7 +163,7 @@ local function start_daemon()
                 l.debug("Daemon is not running, starting...")
                 daemon_job:start()
 
-                if config.kill_daemon_at_exit then
+                if config.start_daemon and config.kill_daemon_at_exit then
                     vim.schedule_wrap(
                         function()
                             vim.cmd [[autocmd VimLeavePre * lua require'nerveux'.kill_daemon()]]
@@ -211,7 +211,7 @@ nerveux.setup = function(opts)
     config._loaded = true
 
     opts = opts or {}
-    config.virtual_titles = opts.virtual_titles or true
+    config.virtual_titles = opts.virtual_titles or false
     config.neuron_cmd = opts.neuron_cmd or "neuron"
 
     -- The path must not end with a `/` !
@@ -219,7 +219,7 @@ nerveux.setup = function(opts)
     config.neuron_dir = opts.neuron_dir or vim.loop.cwd()
 
     config.use_cache = opts.use_cache or opts.start_daemon or false
-    config.kill_daemon_at_exit = opts.dangerously_kill_daemon_at_exit or false
+    config.kill_daemon_at_exit = opts.kill_daemon_at_exit or false
 
     config.virtual_title_hl = opts.virtual_title_hl or "Special"
 

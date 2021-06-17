@@ -24,26 +24,30 @@ You can override the defaults like so:
 
 ```lua
 require 'nerveux'.setup {
-    -- 
+    -- path to neuron executable (default: neuron in PATH)
     neuron_cmd = "neuron"
 
-    -- no trailing slash, defaults to current directory
+    -- no trailing slash, (default: cwd)
     neuron_dir = "/my/zettel/root/dir",
 
-    -- Use the cache, significantly faster
+    -- Use the cache, significantly faster (default: false)
     use_cache = true,
 
-    -- start the neuron daemon to keep the cache up to date
+    -- start the neuron daemon to keep the cache up to date (default: false)
     start_daemon = true,
 
-    -- show zettel titles inline as virtual text
+    -- show zettel titles inline as virtual text (default: false)
     virtual_titles = true
 
-    -- Automatically create mappings
+    -- Automatically create mappings (default: false)
     create_default_mappings = true,
 
-    -- The Highlight Group used for the inline zettel titles (virtual text)
+    -- The Highlight Group used for the inline zettel titles (default: Special)
     virtual_title_hl = Special
+
+    -- `kill -9` the pid of the daemon at exit (VimPreLeave), only valid is
+    -- start_daemon is true (default: false)
+    kill_daemon_at_exit = true
 }
 ```
 
