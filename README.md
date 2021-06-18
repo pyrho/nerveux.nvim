@@ -4,6 +4,14 @@ A neovim lua plugin to interact with [neuron](http://neuron.zettel.page).
 
 ![nerveux_normal](https://github.com/pyrho/static-imgs/raw/master/photo-2.jpeg)
 
+## Highlights
+
+- Display zettle titles inline via virtual text overlays
+    - in `insert` mode, the virtual text is place at the end of line
+- Uses telescope.nvim for search zettels
+- Cached queries via neuron daemon
+    - daemon lifecycle is handled by the plugin
+
 ## Install
 ```vimL
 Plug 'nvim-lua/plenary.nvim'
