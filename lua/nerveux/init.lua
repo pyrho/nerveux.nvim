@@ -96,9 +96,9 @@ function nerveux.add_virtual_title_current_line(buf, ln, line, is_overlay, nb_li
 
                 if is_overlay then
                     do
-                    local end_col_offset = end_col - 1
-                    local start_col_offset = start_col - 2
-                    return u.rpad(json.Title, end_col_offset - start_col_offset, is_at_eol)
+                        local end_col_offset = end_col - 1
+                        local start_col_offset = start_col - 2
+                        return u.rpad(json.Title, end_col_offset - start_col_offset, is_at_eol)
                     end
                 else
                     return json.Title
@@ -264,6 +264,31 @@ function nerveux.update_virtual_titles(buf, is_overlay)
     vim.api.nvim_buf_clear_namespace(buf, ns, 0, -1)
     nerveux.add_all_virtual_titles(buf, is_overlay)
 end
+function nerveux.setup_default_mappings()
+    vim.api.nvim_buf_set_keymap(
+        0,
+        "n",
+        "gzz",
+        [[<Cmd>lua require('telescope').extensions.nerveux.search {}<CR>]],
+        {noremap = true, silent = true}
+    )
+
+    vim.api.nvim_buf_set_keymap(
+        0,
+        "n",
+        "gzn",
+        [[<Cmd>lua require('nerveux').new_zettel()<CR>]],
+        {noremap = true, silent = true}
+    )
+
+    vim.api.nvim_buf_set_keymap(
+        0,
+        "n",
+        "<CR>",
+        [[<Cmd>lua require('nerveux').open_zettel_under_cursor()<CR>]],
+        {noremap = true, silent = true}
+    )
+end
 
 nerveux.setup = function(opts)
     ns = vim.api.nvim_create_namespace("nerveux.nvim")
@@ -291,27 +316,9 @@ nerveux.setup = function(opts)
     end
 
     if opts.create_default_mappings then
-        vim.api.nvim_set_keymap(
-            "n",
-            "gzz",
-            [[<Cmd>lua require('telescope').extensions.nerveux.search {}<CR>]],
-            {noremap = true, silent = true}
-        )
-
-        vim.api.nvim_set_keymap(
-            "n",
-            "gzn",
-            [[<Cmd>lua require('nerveux').new_zettel()<CR>]],
-            {noremap = true, silent = true}
-        )
-
-        vim.api.nvim_set_keymap(
-            "n",
-            "<CR>",
-            [[<Cmd>lua require('nerveux').open_zettel_under_cursor()<CR>]],
-            {noremap = true, silent = true}
-        )
+        vim.cmd(string.format([[au BufRead %s/*.md lua require'nerveux'.setup_default_mappings()]], config.neuron_dir))
     end
+
     setup_autocmds()
 end
 
