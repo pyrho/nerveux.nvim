@@ -3,6 +3,7 @@
 A neovim lua plugin to interact with [neuron](http://neuron.zettel.page).
 
 ![nerveux_normal](https://github.com/pyrho/static-imgs/raw/master/photo.png)
+![nerveux_normal](https://github.com/pyrho/static-imgs/raw/master/photo-1kj.png)
 
 ## Install
 ```vimL
@@ -56,11 +57,11 @@ require 'nerveux'.setup {
 
 ## Default Mappings
 
-`gzz`: Search all your zettels, press `<Tab>` to insert the selected zettel
-
-`gzn`: Create a new zettel
-
-`<CR>`: Follow link under cursor
+- `gzz`: Search all your zettels
+    - then `<CR>` to edit
+    - then `<Tab>` to insert the selected zettel into buffer
+- `gzn`: Create a new zettel
+- `<CR>`: Follow link under cursor
 
 ## Similar plugins
 
