@@ -2,7 +2,7 @@
 
 A neovim lua plugin to interact with [neuron](http://neuron.zettel.page).
 
-![nerveux_normal](https://github.com/pyrho/static-imgs/raw/master/photo.jpeg)
+![nerveux_normal](https://github.com/pyrho/static-imgs/raw/master/photo-2.jpeg)
 
 ## Install
 ```vimL
