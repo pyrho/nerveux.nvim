@@ -66,12 +66,14 @@ require 'nerveux'.setup {
 
 ## Similar plugins
 
-- [neuron.nvim](https://github.com/oberblastmeister/neuron.nvim)
+- [oberblastmeister/neuron.nvim](https://github.com/oberblastmeister/neuron.nvim)
+    - feature rich
     - from which nerveux.nvim borrows a lot of code
     - still active afaik
-- [neuron.vim](https://github.com/ihsanturk/neuron.vim)
+    - that's the one you should be using really :P
+- [ihsanturk/neuron.vim](https://github.com/ihsanturk/neuron.vim)
     - OG vim neuron plugin, but long defunct
-- [neuron.vim](https://github.com/fiatjaf/neuron.vim)
+- [fiatjaf/neuron.vim](https://github.com/fiatjaf/neuron.vim)
     - A fork of the previous one, also defunct
-- [neuron-v2.vim](https://github.com/chiefnoah/neuron-v2.vim)
+- [chiefnoah/neuron-v2.vim](https://github.com/chiefnoah/neuron-v2.vim)
     - neuron v2 compatible, but also now defunct
