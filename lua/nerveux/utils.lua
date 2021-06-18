@@ -13,11 +13,28 @@ function utils.find_link(s)
 end
 
 --- Stolen from https://github.com/blitmap/lua-snippets/blob/master/string-pad.lua
+function utils.lpad(s, l, is_eol)
 
+    local short_or_eq = #s <= l
+    local ss = (is_eol or short_or_eq) and s or (string.sub(s, 0, l) .. "…")
+    local res = string.rep(c or " ", l - #ss) .. s
+
+    return res
+end
+
+--- Stolen from https://github.com/blitmap/lua-snippets/blob/master/string-pad.lua
+function utils.pad(s, l, is_eol)
+    local c = c or " "
+    local res1 = utils.rpad(s, (l / 2) + #s, is_eol) -- pad to half-length + the length of s
+    local res2 = utils.lpad(res1, l, is_eol) -- right-pad our left-padded string to the full length
+
+    return res2
+end
+
+--- Stolen from https://github.com/blitmap/lua-snippets/blob/master/string-pad.lua
 function utils.rpad(s, l, is_eol)
-
-local short_or_eq = #s <= l
-    local ss = (is_eol or short_or_eq) and s or (string.sub(s, 0, l ) .. "…")
+    local short_or_eq = #s <= l
+    local ss = (is_eol or short_or_eq) and s or (string.sub(s, 1, l - 1) .. "…")
     local res = ss .. string.rep(c or " ", l - #ss)
 
     return res

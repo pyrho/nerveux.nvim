@@ -50,9 +50,6 @@ require 'nerveux'.setup {
     --- `kill -9` the pid of the daemon at exit (VimPreLeave), only valid is
     -- start_daemon is true (default: false)
     kill_daemon_at_exit = true,
-
-    --- Surround links virtual text with fancy chars (default: true)
-    decorate_links = true,
 }
 ```
 

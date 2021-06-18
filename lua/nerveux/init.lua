@@ -92,18 +92,14 @@ function nerveux.add_virtual_title_current_line(buf, ln, line, is_overlay, nb_li
             end
 
             local title = (function()
-                local left_decor = ""
-                local right_decor = ""
-
-                if config.decorate_links then
-                    left_decor = (is_folgezettel and "⟪ " or "⟨ ")
-                    right_decor = (is_folgezettel and " ⟫" or " ⟩")
-                end
                 local is_at_eol = #line == end_col
-                print(is_at_eol )
 
                 if is_overlay then
-                    return left_decor .. u.rpad(json.Title, end_col - start_col - (is_folgezettel and 3 or 4), is_at_eol) .. right_decor
+                    do
+                    local end_col_offset = end_col - 1
+                    local start_col_offset = start_col - 2
+                    return u.rpad(json.Title, end_col_offset - start_col_offset, is_at_eol)
+                    end
                 else
                     return json.Title
                 end
@@ -279,7 +275,6 @@ nerveux.setup = function(opts)
     opts = opts or {}
     config.virtual_titles = opts.virtual_titles or false
     config.neuron_cmd = opts.neuron_cmd or "neuron"
-    config.decorate_links = opts.decorate_links == nil or opts.decorate_links == true
 
     -- The path must not end with a `/` !
     -- Otherwise it will fuck up the autocmd
