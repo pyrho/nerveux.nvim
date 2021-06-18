@@ -1,22 +1,31 @@
 local utils = {}
 local Job = require "plenary.job"
 
-
-local DOUBLE_LINK_RE = "%[%[(%w+)%]%]#?"
-local LINK_WITH_ALIAS = "%[%[(%w+%)%|%w+%]%]"
+local DOUBLE_LINK_RE = "%[%[([ A-Za-z0-9|]+)%]%]#?"
 
 ---@param s string
 function utils.match_link(s)
-  return s:match(DOUBLE_LINK_RE) or s:match(LINK_WITH_ALIAS )
+    return s:match(DOUBLE_LINK_RE)
 end
 
 function utils.find_link(s)
-  return s:find(DOUBLE_LINK_RE) or s:match(LINK_WITH_ALIAS)
+    return s:find(DOUBLE_LINK_RE)
+end
+
+--- Stolen from https://github.com/blitmap/lua-snippets/blob/master/string-pad.lua
+
+function utils.rpad(s, l, is_eol)
+
+local short_or_eq = #s <= l
+    local ss = (is_eol or short_or_eq) and s or (string.sub(s, 0, l ) .. "…")
+    local res = ss .. string.rep(c or " ", l - #ss)
+
+    return res
 end
 
 function utils.map(tbl, f)
     local t = {}
-    for k,v in pairs(tbl) do
+    for k, v in pairs(tbl) do
         t[k] = f(v)
     end
     return t

@@ -1,3 +1,4 @@
+local actions = require("telescope.actions")
 local finders = require("telescope.finders")
 local pickers = require("telescope.pickers")
 local previewers = require("telescope.previewers")
@@ -81,7 +82,21 @@ local function search_zettel(opts)
     pickers.new(
         opts,
         {
-            prompt_title = "Find Zettel",
+            attach_mappings = function(_, map)
+                map(
+                    "i",
+                    "<tab>",
+                    function(prompt_bufnr)
+                        local entry = actions.get_selected_entry()
+                        actions.close(prompt_bufnr)
+                        vim.api.nvim_put({"[[" .. entry.ID .. "]]"}, "c", true, true)
+                    end
+                )
+
+                return true
+            end,
+
+            prompt_title = "Find/Insert Zettel",
             finder = finders.new_dynamic {
                 entry_maker = maker,
                 fn = query_neuron

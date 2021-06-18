@@ -24,9 +24,10 @@ nerveux.kill_daemon = function()
     end
 end
 
-function nerveux.add_all_virtual_titles(buf)
-    for ln, line in ipairs(vim.api.nvim_buf_get_lines(buf, 0, -1, true)) do
-        nerveux.add_virtual_title_current_line(buf, ln, line)
+function nerveux.add_all_virtual_titles(buf, is_overlay)
+    local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, true)
+    for ln, line in ipairs(lines) do
+        nerveux.add_virtual_title_current_line(buf, ln, line, is_overlay, #lines)
     end
 end
 
@@ -59,7 +60,7 @@ local function query_id(id, callback)
     }:start()
 end
 
-function nerveux.add_virtual_title_current_line(buf, ln, line)
+function nerveux.add_virtual_title_current_line(buf, ln, line, is_overlay, nb_lines)
     if type(line) ~= "string" then
         return
     end
@@ -68,6 +69,14 @@ function nerveux.add_virtual_title_current_line(buf, ln, line)
         return
     end
     local start_col, end_col = u.find_link(line)
+    local is_folgezettel = string.sub(line, end_col, end_col) == "#"
+    local hl = (function()
+        if is_folgezettel then
+            return config.virtual_title_hl_folge
+        else
+            return config.virtual_title_hl
+        end
+    end)()
 
     query_id(
         id,
@@ -81,17 +90,46 @@ function nerveux.add_virtual_title_current_line(buf, ln, line)
             if json.error then
                 return
             end
-            local title = json.Title
-            vim.api.nvim_buf_set_extmark(
-                buf,
-                ns,
-                ln - 1,
-                start_col - 1,
-                {
-                    end_col = end_col,
-                    virt_text = {{title, config.virtual_title_hl}}
-                }
-            )
+
+            local title = (function()
+                local left_decor = ""
+                local right_decor = ""
+
+                if config.decorate_links then
+                    left_decor = (is_folgezettel and "⟪ " or "⟨ ")
+                    right_decor = (is_folgezettel and " ⟫" or " ⟩")
+                end
+                local is_at_eol = #line == end_col
+                print(is_at_eol )
+
+                if is_overlay then
+                    return left_decor .. u.rpad(json.Title, end_col - start_col - (is_folgezettel and 3 or 4), is_at_eol) .. right_decor
+                else
+                    return json.Title
+                end
+            end)()
+
+            local extmark_opts = {
+                end_col = end_col,
+                virt_text = {{title, hl}}
+            }
+
+            if is_overlay then
+                extmark_opts.virt_text_pos = "overlay"
+                extmark_opts.virt_text_hide = true
+            end
+
+            -- This is needed because there seems to be a bug in
+            -- `virt_text_pos="overlay" when the virtual text starts at column 0`
+            local start_col_patched = (function()
+                if start_col == 1 then
+                    return 2
+                else
+                    return start_col
+                end
+            end)()
+
+            vim.api.nvim_buf_set_extmark(buf, ns, ln - 1, start_col_patched - 1, extmark_opts)
         end
     )
 end
@@ -102,8 +140,37 @@ local function setup_autocmds()
     vim.cmd [[au!]]
 
     if config.virtual_titles == true then
-        vim.cmd(string.format("au BufRead %s lua require'nerveux'.add_all_virtual_titles()", pathpattern))
-        vim.cmd(string.format([[ au BufWrite %s lua require'nerveux'.update_virtual_titles() ]], pathpattern))
+        -- I don't yet understand why but having this autocmd on BufEnter causes an error where
+        -- after choosing a file via telescope (or FZF buffer switch) we are somehow trying
+        -- to set the virtual text on the wrong buffer and if the line is out of range it will cause an error.
+        -- vim.cmd(
+        --     string.format([[au BufEnter %s lua require'nerveux'.update_virtual_titles(vim.fn.expand("<abuf>"), true)]], pathpattern)
+        -- )
+        vim.cmd(
+            string.format(
+                [[au BufRead %s lua require'nerveux'.update_virtual_titles(vim.fn.expand("<abuf>"), true)]],
+                pathpattern
+            )
+        )
+        vim.cmd(
+            string.format(
+                [[au InsertLeave %s lua require'nerveux'.update_virtual_titles(vim.fn.expand("<abuf>"), true)]],
+                pathpattern
+            )
+        )
+        vim.cmd(
+            string.format(
+                [[ au BufWrite %s lua require'nerveux'.update_virtual_titles(vim.fn.expand("<abuf>"),true) ]],
+                pathpattern
+            )
+        )
+        vim.cmd(
+            string.format(
+                [[ au InsertEnter %s lua require'nerveux'.update_virtual_titles(vim.fn.expand("<abuf>"),false) ]],
+                pathpattern,
+                ns
+            )
+        )
     end
 
     vim.cmd [[augroup END]]
@@ -180,7 +247,6 @@ end
 function nerveux.open_zettel_under_cursor()
     local word = vim.fn.expand("<cWORD>")
 
-    print(word)
     local id = u.match_link(word)
 
     if id == nil then
@@ -198,9 +264,9 @@ function nerveux.open_zettel_under_cursor()
     )
 end
 
-function nerveux.update_virtual_titles(buf)
+function nerveux.update_virtual_titles(buf, is_overlay)
     vim.api.nvim_buf_clear_namespace(buf, ns, 0, -1)
-    nerveux.add_all_virtual_titles()
+    nerveux.add_all_virtual_titles(buf, is_overlay)
 end
 
 nerveux.setup = function(opts)
@@ -213,6 +279,7 @@ nerveux.setup = function(opts)
     opts = opts or {}
     config.virtual_titles = opts.virtual_titles or false
     config.neuron_cmd = opts.neuron_cmd or "neuron"
+    config.decorate_links = opts.decorate_links == nil or opts.decorate_links == true
 
     -- The path must not end with a `/` !
     -- Otherwise it will fuck up the autocmd
@@ -222,6 +289,7 @@ nerveux.setup = function(opts)
     config.kill_daemon_at_exit = opts.kill_daemon_at_exit or false
 
     config.virtual_title_hl = opts.virtual_title_hl or "Special"
+    config.virtual_title_hl_folge = opts.virtual_title_hl_folge or "Repeat"
 
     if opts.start_daemon then
         start_daemon()

@@ -1,12 +1,11 @@
 # Nerveux
 
-*Work in progress*
-
 A neovim lua plugin to interact with [neuron](http://neuron.zettel.page).
+
+![nerveux_normal](https://github.com/pyrho/static-imgs/raw/master/photo.png)
 
 ## Install
 ```vimL
-" vim-plug 
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-telescope/telescope.nvim'
@@ -49,24 +48,28 @@ require 'nerveux'.setup {
     -- `kill -9` the pid of the daemon at exit (VimPreLeave), only valid is
     -- start_daemon is true (default: false)
     kill_daemon_at_exit = true
+
+    -- Surround links virtual text with fancy chars (default: true)
+    decorate_links = true,
 }
 ```
 
 ## Default Mappings
 
-`gzz`: Search all your zettels
+`gzz`: Search all your zettels, press `<Tab>` to insert the selected zettel
 
 `gzn`: Create a new zettel
 
 `<CR>`: Follow link under cursor
 
-## Motivation
+## Similar plugins
 
-So far the [history](https://github.com/ihsanturk/neuron.vim) of vim
-[plugins](https://github.com/fiatjaf/neuron.vim) for neuron [has](https://github.com/oberblastmeister/neuron.nvim) been very
-[spotty](https://github.com/chiefnoah/neuron-v2.vim).
-
-Now it's my turn to create abandonware (:) (and learn how to build lua neovim
-plugins !)
-
-A lot of the code is ~~borrowed~~ blatantly stolen from [neuron.nvim](https://github.com/oberblastmeister/neuron.nvim).
+- [neuron.nvim](https://github.com/oberblastmeister/neuron.nvim)
+    - from which nerveux.nvim borrows a lot of code
+    - still active afaik
+- [neuron.vim](https://github.com/ihsanturk/neuron.vim)
+    - OG vim neuron plugin, but long defunct
+- [neuron.vim](https://github.com/fiatjaf/neuron.vim)
+    - A fork of the previous one, also defunct
+- [neuron-v2.vim](https://github.com/chiefnoah/neuron-v2.vim)
+    - neuron v2 compatible, but also now defunct
