@@ -2,7 +2,8 @@
 
 A neovim lua plugin to interact with [neuron](http://neuron.zettel.page).
 
-![nerveux_normal](https://github.com/pyrho/static-imgs/raw/master/photo-2.jpeg)
+![nerveux_normal](https://github.com/pyrho/static-imgs/raw/master/nerveux.jpeg)
+See [this](https://asciinema.org/a/422065) asciinema recording for a little demo.
 
 ## Highlights
 
