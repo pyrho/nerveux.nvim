@@ -69,4 +69,8 @@ utils.is_process_running = function(process_name, cb)
     )
 end
 
+function utils.get_zettel_id_from_fname()
+    return vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":t:r")
+end
+
 return utils

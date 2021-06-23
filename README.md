@@ -13,11 +13,27 @@ A neovim lua plugin to interact with [neuron](http://neuron.zettel.page).
     - daemon lifecycle is handled by the plugin
 
 ## Install
+Using [vim-plug](https://github.com/junegunn/vim-plug)
+
 ```vimL
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'pyrho/nerveux.nvim'
+```
+
+or [packer](https://github.com/wbthomason/packer.nvim/)
+
+```lua
+use {
+    'pyrho/nerveux.nvim',
+    requires = {
+        'nvim-lua/plenary.nvim',
+        'nvim-lua/popup.nvim',
+        'nvim-telescope/telescope.nvim',
+    },
+    config = function() require"nerveux".setup() end,
+}
 ```
 
 ## Setup
@@ -65,6 +81,10 @@ require 'nerveux'.setup {
 - `gzz`: Search all your zettels
     - then `<CR>` to edit
     - then `<Tab>` to insert the selected zettel into buffer
+- `gzb`: Search [backlinks](https://neuron.zettel.page/uplink-tree)
+    - then `<CR>` to edit
+- `gzu`: Search [uplinks](https://neuron.zettel.page/uplink-tree)
+    - then `<CR>` to edit
 - `gzn`: Create a new zettel
 - `<CR>`: Follow link under cursor
 
