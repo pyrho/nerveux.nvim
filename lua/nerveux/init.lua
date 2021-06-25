@@ -140,14 +140,21 @@ local function setup_autocmds()
   vim.cmd [[augroup END]]
 end
 
+--- Create a new zettel with neuron and open it in vim
 function nerveux.new_zettel()
   Job:new{
     command = config.neuron_cmd,
     args = {"new"},
     cwd = config.neuron_dir,
-    on_exit = vim.schedule_wrap(function(job --[[, return_val--]] )
+    on_exit = vim.schedule_wrap(function(job)
       local data = table.concat(job:result())
       vim.cmd("edit " .. data)
+
+      -- add a new line
+      vim.cmd [[norm Go]]
+
+      -- and another with the start of a header
+      vim.cmd [[norm o# ]]
     end)
   }:start()
 end
