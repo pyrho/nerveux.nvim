@@ -96,8 +96,18 @@ function nerveux.add_virtual_title_current_line(buf, ln, line, is_overlay,
       end
     end)()
 
-    vim.api.nvim_buf_set_extmark(buf, ns, ln - 1, start_col_patched - 1,
+    -- This is called on `BufWrite` so this gets executed on `:wq` but has 
+    -- an async call to `neuron`.
+    -- When the async calls back, the buffer is no longer visible so an
+    -- error is thrown because it seems you can't add extmarks to a hidden buffer (which
+    -- makes sense).
+    -- This check helps with this issue.
+    -- We need to add `+ 0` here to cast buf as number, otherwise the call to 
+    -- bufwinnr always returns -1 because the string is not valid
+    if vim.fn.bufwinnr(buf + 0) ~= -1 then
+        vim.api.nvim_buf_set_extmark(buf, ns, ln - 1, start_col_patched - 1,
                                  extmark_opts)
+    end
   end)
 end
 
