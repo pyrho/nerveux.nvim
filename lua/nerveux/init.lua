@@ -226,6 +226,10 @@ function nerveux.setup_default_mappings()
                               [[<Cmd>lua require"nerveux".new_zettel()<CR>]],
                               {noremap = true, silent = true})
 
+  vim.api.nvim_buf_set_keymap(0, "n", "gz?",
+                              [[<Cmd>lua require"nerveux.help".show_help()<CR>]],
+                              {noremap = true, silent = true})
+
   vim.api.nvim_buf_set_keymap(0, "n", "<CR>",
                               [[<Cmd>lua require"nerveux".open_zettel_under_cursor()<CR>]],
                               {noremap = true, silent = true})

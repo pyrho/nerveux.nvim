@@ -7,6 +7,9 @@ set cpo&vim " reset them to defaults
 " command to run our plugin
 command! Nerv lua require'nerveux'.Nerv()
 
+hi def link NerveuxHelpHeader htmlH1
+hi def NerveuxHelpText   gui=bold
+
 let &cpo = s:save_cpo " and restore after
 unlet s:save_cpo
 
