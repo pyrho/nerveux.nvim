@@ -234,39 +234,39 @@ function nerveux.insert_last_zettel_id(is_folgezettel)
 end
 
 function nerveux.setup_default_mappings()
-  vim.api.nvim_buf_set_keymap(0, "n", "gzz",
+  vim.api.nvim_buf_set_keymap(0, "n", config.mappings.search_zettels,
                               [[<Cmd>lua require"nerveux.search".search_zettel {}<CR>]],
                               {noremap = true, silent = true})
 
-  vim.api.nvim_buf_set_keymap(0, "n", "gzb",
+  vim.api.nvim_buf_set_keymap(0, "n", config.mappings.backlinks_search,
                               [[<Cmd>lua require"nerveux.search".search_zettel {backlinks = require"nerveux.utils".get_zettel_id_from_fname(), prompt = "Search Backlinks"}<CR>]],
                               {noremap = true, silent = true})
 
-  vim.api.nvim_buf_set_keymap(0, "n", "gzu",
+  vim.api.nvim_buf_set_keymap(0, "n", config.mappings.uplinks_search,
                               [[<Cmd>lua require"nerveux.search".search_zettel {uplinks = require"nerveux.utils".get_zettel_id_from_fname(), prompt = "Search Uplinks"}<CR>]],
                               {noremap = true, silent = true})
 
-  vim.api.nvim_buf_set_keymap(0, "n", "gzn",
+  vim.api.nvim_buf_set_keymap(0, "n", config.mappings.new,
                               [[<Cmd>lua require"nerveux".new_zettel()<CR>]],
                               {noremap = true, silent = true})
 
-  vim.api.nvim_buf_set_keymap(0, "n", "gzs",
+  vim.api.nvim_buf_set_keymap(0, "n", config.mappings.search_content,
                               [[<Cmd>lua require"nerveux".grep_zettels()<CR>]],
                               {noremap = true, silent = true})
 
-  vim.api.nvim_buf_set_keymap(0, "n", "gzl",
+  vim.api.nvim_buf_set_keymap(0, "n", config.mappings.insert_link,
                               [[<Cmd>lua require"nerveux".insert_last_zettel_id(false)<CR>]],
                               {noremap = true, silent = true})
 
-  vim.api.nvim_buf_set_keymap(0, "n", "gzL",
+  vim.api.nvim_buf_set_keymap(0, "n", config.mappings.insert_link_folge,
                               [[<Cmd>lua require"nerveux".insert_last_zettel_id(true)<CR>]],
                               {noremap = true, silent = true})
 
-  vim.api.nvim_buf_set_keymap(0, "n", "gz?",
+  vim.api.nvim_buf_set_keymap(0, "n", config.mappings.help,
                               [[<Cmd>lua require"nerveux.help".show_help()<CR>]],
                               {noremap = true, silent = true})
 
-  vim.api.nvim_buf_set_keymap(0, "n", "<CR>",
+  vim.api.nvim_buf_set_keymap(0, "n", config.mappings.follow,
                               [[<Cmd>lua require"nerveux".open_zettel_under_cursor()<CR>]],
                               {noremap = true, silent = true})
 end
@@ -290,6 +290,22 @@ nerveux.setup = function(opts)
 
   config.virtual_title_hl = opts.virtual_title_hl or "Special"
   config.virtual_title_hl_folge = opts.virtual_title_hl_folge or "Repeat"
+
+  opts.mappings = opts.mappings or {}
+
+  config.mappings = {
+       search_zettels = "gzz" ,
+       backlinks_search = "gzb" ,
+       uplinks_search = "gzu" ,
+       new = "gzn" ,
+       search_content = "gzs" ,
+       insert_link = "gzl" ,
+       insert_link_folge = "gzL" ,
+       follow = "<CR>" ,
+       help = "gz?" ,
+  }
+
+  for k,v in pairs(opts.mappings) do config.mappings[k] = v end
 
   if opts.start_daemon then start_daemon() end
 

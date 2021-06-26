@@ -9,8 +9,8 @@ See [this](https://asciinema.org/a/422065) asciinema recording for a little demo
 
 - Display zettle titles inline via virtual text overlays
     - in `insert` mode, the virtual text is place at the end of line
-- Uses telescope.nvim for search zettels
-- Cached queries via neuron daemon
+- Search Zettels and their content with [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim)
+- Cached queries via neuron daemon (for moar speed!)
     - daemon lifecycle is handled by the plugin
 
 ## Install
@@ -39,7 +39,7 @@ use {
 
 ## Setup
 
-Simply add the following somewhere in your config.
+Simply add the following somewhere in your config to use the default settings.
 
 ```lua
 require 'nerveux'.setup()
@@ -52,7 +52,7 @@ require 'nerveux'.setup {
     --- path to neuron executable (default: neuron in PATH)
     neuron_cmd = "neuron",
 
-    --- no trailing slash, (default: cwd)
+    --- no trailing slash, (default: current directory)
     neuron_dir = "/my/zettel/root/dir",
 
     --- Use the cache, significantly faster (default: false)
@@ -74,24 +74,42 @@ require 'nerveux'.setup {
     --- `kill -9` the pid of the daemon at exit (VimPreLeave), only valid is
     -- start_daemon is true (default: false)
     kill_daemon_at_exit = true,
+
+    --- You can overwrite this table partially
+    -- and your settings will get merged with the defaults
+    mappings = {
+
+       -- Search all your zettels
+       -- * then `<CR>` to edit
+       -- * or `<Tab>` to insert the selected zettel ID under your cursor
+       search_zettels = "gzz" ,
+
+       -- Search the backlinks to the current zettel 
+       backlinks_search = "gzb" ,
+
+       -- Search the only the uplinks to the current zettel 
+       uplinks_search = "gzu" ,
+
+       -- Create a new zettel via neuron and :edit it
+       new = "gzn" ,
+
+       -- Search for content inside all the zettels
+       search_content = "gzs" ,
+
+       -- Insert the ID of the previously visited zettel
+       insert_link = "gzl" ,
+
+       -- Insert the ID of the previously visited zettel, but as a folgezettel
+       insert_link_folge = "gzL" ,
+
+       -- Open the zettel ID that's under the cursor
+       follow = "<CR>" ,
+
+       -- Show the help
+       help = "gz?" ,
+    }
 }
 ```
-
-## Default Mappings
-
-- `gz?`: Show the help 
-- `gzz`: Search all your zettels
-    - then `<CR>` to edit
-    - then `<Tab>` to insert the selected zettel into buffer
-- `gzb`: Search [backlinks](https://neuron.zettel.page/uplink-tree)
-    - then `<CR>` to edit
-- `gzu`: Search [uplinks](https://neuron.zettel.page/uplink-tree)
-    - then `<CR>` to edit
-- `gzn`: Create a new zettel
-- `gzl`: Insert the ID of the previously seen zettel
-- `gzL`: Insert the ID of the previously seen zettel as folgezettel
-- `gzs`: Search for content in all the zettels
-- `<CR>`: Follow link under cursor
 
 ## Similar plugins
 

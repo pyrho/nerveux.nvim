@@ -1,4 +1,5 @@
 local M = {}
+local config = require"nerveux.config"
 
 -- Stolen from [this](https://www.2n.pl/blog/how-to-write-neovim-plugins-in-lua)
 -- great article
@@ -42,15 +43,15 @@ function M.show_help()
   api.nvim_buf_add_highlight(buf, -1, 'NerveuxHelpHeader', 0, 0, -1)
 
   local bindings = {
-      { "  gzz        Search/Edit all Zettels (insert link with <Tab>)"},
-      { "  gzs        Search for content in all zettels"},
-      { "  <CR>       Follow link under cursor"},
-      { "  gzb        Search all backlinks"},
-      { "  gzu        Search uplinks only"},
-      { "  gzn        Create new Zettel and edit"},
-      { "  gzl        Insert previously visited zettel"},
-      { "  gzL        Insert previously visited zettel as folgezettel"},
-      { "  gz?        This help"},
+      { "  " ..config.mappings.search_zettels..    " Search/Edit all Zettels (insert link with <Tab>)" },
+      { "  " ..config.mappings.search_content..    " Search for content in all zettels               " },
+      { "  " ..config.mappings.follow..            " Follow link under cursor                        " },
+      { "  " ..config.mappings.backlinks_search..  " Search all backlinks                            " },
+      { "  " ..config.mappings.uplinks_search..    " Search uplinks only                             " },
+      { "  " ..config.mappings.new..               " Create new Zettel and edit                      " },
+      { "  " ..config.mappings.insert_link..       " Insert previously visited zettel                " },
+      { "  " ..config.mappings.insert_link_folge.. " Insert previously visited zettel as folgezettel " },
+      { "  " ..config.mappings.help..              " This help                                       " },
   }
 
 
