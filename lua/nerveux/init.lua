@@ -116,6 +116,10 @@ local function setup_autocmds()
   vim.cmd [[augroup Nerveux]]
   vim.cmd [[au!]]
 
+  vim.cmd(string.format(
+  [[ au BufLeave %s lua require'nerveux'.update_last_zettel_id(vim.fn.expand("%%:t:r")) ]],
+  pathpattern))
+
   if config.virtual_titles == true then
     -- I don't yet understand why but having this autocmd on BufEnter causes an error where
     -- after choosing a file via telescope (or FZF buffer switch) we are somehow trying
@@ -208,6 +212,22 @@ function nerveux.update_virtual_titles(buf, is_overlay)
   nerveux.add_all_virtual_titles(buf, is_overlay)
 end
 
+nerveux._LAST_EDITED_ZETTEL = nil
+function nerveux.update_last_zettel_id(id)
+    l.debug("Updating last zettel id: " .. id)
+    nerveux._LAST_EDITED_ZETTEL = id
+end
+
+function nerveux.insert_last_zettel_id(is_folgezettel)
+    if nerveux._LAST_EDITED_ZETTEL ~= nil then
+        vim.api.nvim_put(
+          {"[[" .. nerveux._LAST_EDITED_ZETTEL .. "]]" .. (is_folgezettel and "#" or "")},
+          "",
+          true,
+          true
+        )
+    end
+end
 
 function nerveux.setup_default_mappings()
   vim.api.nvim_buf_set_keymap(0, "n", "gzz",
@@ -224,6 +244,14 @@ function nerveux.setup_default_mappings()
 
   vim.api.nvim_buf_set_keymap(0, "n", "gzn",
                               [[<Cmd>lua require"nerveux".new_zettel()<CR>]],
+                              {noremap = true, silent = true})
+
+  vim.api.nvim_buf_set_keymap(0, "n", "gzl",
+                              [[<Cmd>lua require"nerveux".insert_last_zettel_id(false)<CR>]],
+                              {noremap = true, silent = true})
+
+  vim.api.nvim_buf_set_keymap(0, "n", "gzL",
+                              [[<Cmd>lua require"nerveux".insert_last_zettel_id(true)<CR>]],
                               {noremap = true, silent = true})
 
   vim.api.nvim_buf_set_keymap(0, "n", "gz?",
@@ -258,9 +286,12 @@ nerveux.setup = function(opts)
   if opts.start_daemon then start_daemon() end
 
   if opts.create_default_mappings then
+    vim.cmd("augroup NerveuxMappings")
+    vim.cmd("autocmd!")
     vim.cmd(string.format(
-                [[au BufRead %s/*.md lua require'nerveux'.setup_default_mappings()]],
+                [[autocmd BufRead %s/*.md lua require'nerveux'.setup_default_mappings()]],
                 config.neuron_dir))
+    vim.cmd("augroup END")
   end
 
   setup_autocmds()
