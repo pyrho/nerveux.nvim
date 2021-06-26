@@ -64,7 +64,6 @@ function M.search_zettel(opts)
       end
     end
 
-    print(vim.inspect(job_args))
     local job = Job:new{command = nerveux_config.neuron_cmd, args = job_args}
 
     local lines = job:sync()
@@ -72,7 +71,7 @@ function M.search_zettel(opts)
     local parsed_results = vim.fn.json_decode(lines)
 
     if opts.backlinks or opts.uplinks then
-      return vim.tbl_map(function(e) return e[2] end, parsed_results.result)
+      return vim.tbl_map(function(e) return e[2] end, parsed_results[1].result)
     else
       return parsed_results
     end
