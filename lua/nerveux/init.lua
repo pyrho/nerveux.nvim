@@ -144,6 +144,10 @@ local function setup_autocmds()
   vim.cmd [[augroup END]]
 end
 
+function nerveux.grep_zettels()
+    require"telescope.builtin".live_grep({cwd=config.neuron_dir})
+end
+
 --- Create a new zettel with neuron and open it in vim
 function nerveux.new_zettel()
   Job:new{
@@ -244,6 +248,10 @@ function nerveux.setup_default_mappings()
 
   vim.api.nvim_buf_set_keymap(0, "n", "gzn",
                               [[<Cmd>lua require"nerveux".new_zettel()<CR>]],
+                              {noremap = true, silent = true})
+
+  vim.api.nvim_buf_set_keymap(0, "n", "gzs",
+                              [[<Cmd>lua require"nerveux".grep_zettels()<CR>]],
                               {noremap = true, silent = true})
 
   vim.api.nvim_buf_set_keymap(0, "n", "gzl",

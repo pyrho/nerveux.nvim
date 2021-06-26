@@ -79,6 +79,7 @@ require 'nerveux'.setup {
 
 ## Default Mappings
 
+- `gz?`: Show the help 
 - `gzz`: Search all your zettels
     - then `<CR>` to edit
     - then `<Tab>` to insert the selected zettel into buffer
@@ -87,6 +88,9 @@ require 'nerveux'.setup {
 - `gzu`: Search [uplinks](https://neuron.zettel.page/uplink-tree)
     - then `<CR>` to edit
 - `gzn`: Create a new zettel
+- `gzl`: Insert the ID of the previously seen zettel
+- `gzL`: Insert the ID of the previously seen zettel as folgezettel
+- `gzs`: Search for content in all the zettels
 - `<CR>`: Follow link under cursor
 
 ## Similar plugins

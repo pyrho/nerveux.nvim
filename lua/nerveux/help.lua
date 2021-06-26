@@ -43,6 +43,7 @@ function M.show_help()
 
   local bindings = {
       { "  gzz        Search/Edit all Zettels (insert link with <Tab>)"},
+      { "  gzs        Search for content in all zettels"},
       { "  <CR>       Follow link under cursor"},
       { "  gzb        Search all backlinks"},
       { "  gzu        Search uplinks only"},
