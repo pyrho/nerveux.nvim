@@ -21,6 +21,9 @@ Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'pyrho/nerveux.nvim'
+
+" Optional but recommended for better markdown syntax
+Plug 'plasticboy/vim-markdown'
 ```
 
 or [packer](https://github.com/wbthomason/packer.nvim/)
@@ -35,6 +38,8 @@ use {
     },
     config = function() require"nerveux".setup() end,
 }
+-- Optional but recommended for better markdown syntax
+use 'plasticboy/vim-markdown'
 ```
 
 ## Setup
