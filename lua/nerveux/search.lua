@@ -13,7 +13,7 @@ local async = a.async
 local u = require "nerveux.utils"
 local nerveux_config = require "nerveux.config"
 
-local function create_async_query_neuron_function(opts)
+function M.create_async_query_neuron_function(opts)
   opts = opts or {}
   opts.uplinks_of = opts.uplinks_of or false
   opts.backlinks_of = opts.backlinks_of or false
@@ -81,7 +81,7 @@ function M.search_zettel(opts)
     return deets
   end
 
-  pickers.new(opts, {
+  pickers.new({
     attach_mappings = function(_, map)
       map("i", "<tab>", function(prompt_bufnr)
         local entry = actions.get_selected_entry()
