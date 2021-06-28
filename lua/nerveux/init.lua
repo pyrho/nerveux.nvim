@@ -239,11 +239,11 @@ function nerveux.setup_default_mappings()
                               {noremap = true, silent = true})
 
   vim.api.nvim_buf_set_keymap(0, "n", config.mappings.backlinks_search,
-                              [[<Cmd>lua require"nerveux.search".search_zettel {backlinks = require"nerveux.utils".get_zettel_id_from_fname(), prompt = "Search Backlinks"}<CR>]],
+                              [[<Cmd>lua require"nerveux.search".search_zettel {backlinks_of = require"nerveux.utils".get_zettel_id_from_fname(), prompt = "Search Backlinks"}<CR>]],
                               {noremap = true, silent = true})
 
   vim.api.nvim_buf_set_keymap(0, "n", config.mappings.uplinks_search,
-                              [[<Cmd>lua require"nerveux.search".search_zettel {uplinks = require"nerveux.utils".get_zettel_id_from_fname(), prompt = "Search Uplinks"}<CR>]],
+                              [[<Cmd>lua require"nerveux.search".search_zettel {uplinks_of = require"nerveux.utils".get_zettel_id_from_fname(), prompt = "Search Uplinks"}<CR>]],
                               {noremap = true, silent = true})
 
   vim.api.nvim_buf_set_keymap(0, "n", config.mappings.new,
