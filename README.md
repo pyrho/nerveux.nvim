@@ -82,6 +82,7 @@ require 'nerveux'.setup {
 
     --- You can overwrite this table partially
     -- and your settings will get merged with the defaults
+    -- You can also disable a single mapping by settings it's value to an empty string.
     mappings = {
 
        -- Search all your zettels

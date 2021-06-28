@@ -105,8 +105,8 @@ function nerveux.add_virtual_title_current_line(buf, ln, line, is_overlay,
     -- We need to add `+ 0` here to cast buf as number, otherwise the call to 
     -- bufwinnr always returns -1 because the string is not valid
     if vim.fn.bufwinnr(buf + 0) ~= -1 then
-        vim.api.nvim_buf_set_extmark(buf, ns, ln - 1, start_col_patched - 1,
-                                 extmark_opts)
+      vim.api.nvim_buf_set_extmark(buf, ns, ln - 1, start_col_patched - 1,
+                                   extmark_opts)
     end
   end)
 end
@@ -117,8 +117,8 @@ local function setup_autocmds()
   vim.cmd [[au!]]
 
   vim.cmd(string.format(
-  [[ au BufLeave %s lua require'nerveux'.update_last_zettel_id(vim.fn.expand("%%:t:r")) ]],
-  pathpattern))
+              [[ au BufLeave %s lua require'nerveux'.update_last_zettel_id(vim.fn.expand("%%:t:r")) ]],
+              pathpattern))
 
   if config.virtual_titles == true then
     -- I don't yet understand why but having this autocmd on BufEnter causes an error where
@@ -145,7 +145,7 @@ local function setup_autocmds()
 end
 
 function nerveux.grep_zettels()
-    require"telescope.builtin".live_grep({cwd=config.neuron_dir})
+  require"telescope.builtin".live_grep({cwd = config.neuron_dir})
 end
 
 --- Create a new zettel with neuron and open it in vim
@@ -218,57 +218,73 @@ end
 
 nerveux._LAST_EDITED_ZETTEL = nil
 function nerveux.update_last_zettel_id(id)
-    l.debug("Updating last zettel id: " .. id)
-    nerveux._LAST_EDITED_ZETTEL = id
+  l.debug("Updating last zettel id: " .. id)
+  nerveux._LAST_EDITED_ZETTEL = id
 end
 
 function nerveux.insert_last_zettel_id(is_folgezettel)
-    if nerveux._LAST_EDITED_ZETTEL ~= nil then
-        vim.api.nvim_put(
-          {"[[" .. nerveux._LAST_EDITED_ZETTEL .. "]]" .. (is_folgezettel and "#" or "")},
-          "",
-          true,
-          true
-        )
-    end
+  if nerveux._LAST_EDITED_ZETTEL ~= nil then
+    vim.api.nvim_put({
+      "[[" .. nerveux._LAST_EDITED_ZETTEL .. "]]" ..
+          (is_folgezettel and "#" or "")
+    }, "", true, true)
+  end
 end
 
 function nerveux.setup_default_mappings()
-  vim.api.nvim_buf_set_keymap(0, "n", config.mappings.search_zettels,
-                              [[<Cmd>lua require"nerveux.search".search_zettel {}<CR>]],
-                              {noremap = true, silent = true})
+  if config.mappings.search_zettels ~= "" then
+    vim.api.nvim_buf_set_keymap(0, "n", config.mappings.search_zettels,
+                                [[<Cmd>lua require"nerveux.search".search_zettel {}<CR>]],
+                                {noremap = true, silent = true})
+  end
 
-  vim.api.nvim_buf_set_keymap(0, "n", config.mappings.backlinks_search,
-                              [[<Cmd>lua require"nerveux.search".search_zettel {backlinks_of = require"nerveux.utils".get_zettel_id_from_fname(), prompt = "Search Backlinks"}<CR>]],
-                              {noremap = true, silent = true})
+  if config.mappings.backlinks_search ~= "" then
+    vim.api.nvim_buf_set_keymap(0, "n", config.mappings.backlinks_search,
+                                [[<Cmd>lua require"nerveux.search".search_zettel {backlinks_of = require"nerveux.utils".get_zettel_id_from_fname(), prompt = "Search Backlinks"}<CR>]],
+                                {noremap = true, silent = true})
+  end
 
-  vim.api.nvim_buf_set_keymap(0, "n", config.mappings.uplinks_search,
-                              [[<Cmd>lua require"nerveux.search".search_zettel {uplinks_of = require"nerveux.utils".get_zettel_id_from_fname(), prompt = "Search Uplinks"}<CR>]],
-                              {noremap = true, silent = true})
+  if config.mappings.uplinks_search ~= "" then
+    vim.api.nvim_buf_set_keymap(0, "n", config.mappings.uplinks_search,
+                                [[<Cmd>lua require"nerveux.search".search_zettel {uplinks_of = require"nerveux.utils".get_zettel_id_from_fname(), prompt = "Search Uplinks"}<CR>]],
+                                {noremap = true, silent = true})
+  end
 
-  vim.api.nvim_buf_set_keymap(0, "n", config.mappings.new,
-                              [[<Cmd>lua require"nerveux".new_zettel()<CR>]],
-                              {noremap = true, silent = true})
+  if config.mappings.new ~= "" then
+    vim.api.nvim_buf_set_keymap(0, "n", config.mappings.new,
+                                [[<Cmd>lua require"nerveux".new_zettel()<CR>]],
+                                {noremap = true, silent = true})
+  end
 
-  vim.api.nvim_buf_set_keymap(0, "n", config.mappings.search_content,
-                              [[<Cmd>lua require"nerveux".grep_zettels()<CR>]],
-                              {noremap = true, silent = true})
+  if config.mappings.search_content ~= "" then
+    vim.api.nvim_buf_set_keymap(0, "n", config.mappings.search_content,
+                                [[<Cmd>lua require"nerveux".grep_zettels()<CR>]],
+                                {noremap = true, silent = true})
+  end
 
-  vim.api.nvim_buf_set_keymap(0, "n", config.mappings.insert_link,
-                              [[<Cmd>lua require"nerveux".insert_last_zettel_id(false)<CR>]],
-                              {noremap = true, silent = true})
+  if config.mappings.insert_link ~= "" then
+    vim.api.nvim_buf_set_keymap(0, "n", config.mappings.insert_link,
+                                [[<Cmd>lua require"nerveux".insert_last_zettel_id(false)<CR>]],
+                                {noremap = true, silent = true})
+  end
 
-  vim.api.nvim_buf_set_keymap(0, "n", config.mappings.insert_link_folge,
-                              [[<Cmd>lua require"nerveux".insert_last_zettel_id(true)<CR>]],
-                              {noremap = true, silent = true})
+  if config.mappings.insert_link_folge ~= "" then
+    vim.api.nvim_buf_set_keymap(0, "n", config.mappings.insert_link_folge,
+                                [[<Cmd>lua require"nerveux".insert_last_zettel_id(true)<CR>]],
+                                {noremap = true, silent = true})
+  end
 
-  vim.api.nvim_buf_set_keymap(0, "n", config.mappings.help,
-                              [[<Cmd>lua require"nerveux.help".show_help()<CR>]],
-                              {noremap = true, silent = true})
+  if config.mappings.help ~= "" then
+    vim.api.nvim_buf_set_keymap(0, "n", config.mappings.help,
+                                [[<Cmd>lua require"nerveux.help".show_help()<CR>]],
+                                {noremap = true, silent = true})
+  end
 
-  vim.api.nvim_buf_set_keymap(0, "n", config.mappings.follow,
-                              [[<Cmd>lua require"nerveux".open_zettel_under_cursor()<CR>]],
-                              {noremap = true, silent = true})
+  if config.mappings.follow ~= "" then
+    vim.api.nvim_buf_set_keymap(0, "n", config.mappings.follow,
+                                [[<Cmd>lua require"nerveux".open_zettel_under_cursor()<CR>]],
+                                {noremap = true, silent = true})
+  end
 end
 
 nerveux.setup = function(opts)
@@ -294,18 +310,18 @@ nerveux.setup = function(opts)
   opts.mappings = opts.mappings or {}
 
   config.mappings = {
-       search_zettels = "gzz" ,
-       backlinks_search = "gzb" ,
-       uplinks_search = "gzu" ,
-       new = "gzn" ,
-       search_content = "gzs" ,
-       insert_link = "gzl" ,
-       insert_link_folge = "gzL" ,
-       follow = "<CR>" ,
-       help = "gz?" ,
+    search_zettels = "gzz",
+    backlinks_search = "gzb",
+    uplinks_search = "gzu",
+    new = "gzn",
+    search_content = "gzs",
+    insert_link = "gzl",
+    insert_link_folge = "gzL",
+    follow = "<CR>",
+    help = "gz?"
   }
 
-  for k,v in pairs(opts.mappings) do config.mappings[k] = v end
+  for k, v in pairs(opts.mappings) do config.mappings[k] = v end
 
   if opts.start_daemon then start_daemon() end
 

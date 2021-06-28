@@ -95,7 +95,7 @@ function M.search_zettel(opts)
     prompt_title = opts.prompt or "Find/Insert Zettel",
     finder = finders.new_dynamic {
       entry_maker = maker,
-      fn = create_async_query_neuron_function(opts)
+      fn = M.create_async_query_neuron_function(opts)
     },
     previewer = previewers.vim_buffer_cat.new {},
     sorter = conf.generic_sorter(opts)
