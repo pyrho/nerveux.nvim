@@ -1,5 +1,4 @@
 local M = {}
-local F = require "plenary.functional"
 local l = require "nerveux.log"
 local actions = require("telescope.actions")
 local finders = require("telescope.finders")
@@ -7,20 +6,27 @@ local pickers = require("telescope.pickers")
 local previewers = require("telescope.previewers")
 local conf = require("telescope.config").values
 local Job = require("plenary.job")
-local a = require("plenary.async_lib")
 local entry_display = require("telescope.pickers.entry_display")
-local async = a.async
 local u = require "nerveux.utils"
 local nerveux_config = require "nerveux.config"
 
-function M.create_async_query_neuron_function(opts)
+--- Spawns a call to `neuron` to query all zettels
+-- @param opts
+-- @field opts.uplinks_of (string) Will query for the uplinks of that zettel ID
+-- @field opts.backlinks_of (string) Will query for the backlinks of that zettel ID
+-- @field opts.use_cache (boolean) use the --cached switch
+-- @field opts.neuron_dir (string) the root directory of the zettelkasten
+-- @field opts.neuron_cmd (string) the command to run to execute neuron
+-- @param callback The function to call when the results are ready
+--        In the form callback(error, table_of_results)
+function M.get_all_zettels(opts, callback)
   opts = opts or {}
   opts.uplinks_of = opts.uplinks_of or false
   opts.backlinks_of = opts.backlinks_of or false
 
-  local job_args = {"-d", nerveux_config.neuron_dir, "query"}
+  local job_args = {"-d", opts.neuron_dir, "query"}
 
-  if (nerveux_config.use_cache or true) then table.insert(job_args, "--cached") end
+  if (opts.use_cache or true) then table.insert(job_args, "--cached") end
 
   if opts.backlinks_of then
     table.insert(job_args, "--backlinks-of")
@@ -35,22 +41,29 @@ function M.create_async_query_neuron_function(opts)
   end
 
   -- this is really bad, this function is called by telescope each time the user input changes...
-  return async(function(needle)
-    local job = Job:new{
-      command = nerveux_config.neuron_cmd or "neuron",
-      args = job_args
-    }
+  local job = Job:new{command = opts.neuron_cmd, args = job_args}
+  job:start()
 
-    local lines = job:sync()
+  job:after_failure(function(j, code, signal) print("Error!") end)
 
-    local parsed_results = vim.fn.json_decode(lines)
+  job:after_success(function(j, code, signal)
+    local lines = j:result()
 
-    if opts.backlinks_of or opts.uplinks_of then
-      return vim.tbl_map(function(e) return e[2] end, parsed_results[1].result)
-    else
-      return parsed_results
-    end
+    -- We need to defer this call because `vim.fn.json_decode`
+    -- cannot be called in a vimL callback
+    vim.schedule_wrap(function()
+      local parsed_results = vim.fn.json_decode(lines)
+
+      if opts.backlinks_of or opts.uplinks_of then
+        return callback(nil, vim.tbl_map(function(e) return e[2] end,
+                                         parsed_results[1].result))
+      else
+        return callback(nil, parsed_results)
+      end
+
+    end)()
   end)
+
 end
 
 --- Search
@@ -81,25 +94,35 @@ function M.search_zettel(opts)
     return deets
   end
 
-  pickers.new({
-    attach_mappings = function(_, map)
-      map("i", "<tab>", function(prompt_bufnr)
-        local entry = actions.get_selected_entry()
-        actions.close(prompt_bufnr)
-        vim.api.nvim_put({"[[" .. entry.ID .. "]]"}, "c", true, true)
-      end)
+  local results = M.get_all_zettels({
+    uplinks_of = opts.uplinks_of,
+    backlinks_of = opts.backlinks_of,
+    neuron_dir = nerveux_config.neuron_dir,
+    neuron_cmd = nerveux_config.neuron_cmd,
+    use_cache = nerveux_config.use_cache
+  }, function(error, results)
+    pickers.new({
+      attach_mappings = function(_, map)
+        map("i", "<tab>", function(prompt_bufnr)
+          local entry = actions.get_selected_entry()
+          actions.close(prompt_bufnr)
+          vim.api.nvim_put({"[[" .. entry.ID .. "]]"}, "c", true, true)
+        end)
 
-      return true
-    end,
+        return true
+      end,
 
-    prompt_title = opts.prompt or "Find/Insert Zettel",
-    finder = finders.new_dynamic {
-      entry_maker = maker,
-      fn = M.create_async_query_neuron_function(opts)
-    },
-    previewer = previewers.vim_buffer_cat.new {},
-    sorter = conf.generic_sorter(opts)
-  }):find()
+      prompt_title = opts.prompt or "Find/Insert Zettel",
+      -- since `neuron query` returns all the zettels at once we don't need
+      -- to continously update the query in regards to what the user has typed
+      -- Use the `finders.new_table` to just have a static list of results
+      finder = finders.new_table {results = results, entry_maker = maker},
+      previewer = previewers.vim_buffer_cat.new {},
+      sorter = conf.generic_sorter(opts)
+    }):find()
+
+  end)
+
 end
 
 return M
