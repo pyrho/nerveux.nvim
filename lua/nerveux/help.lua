@@ -13,7 +13,6 @@ end
 
 function M.show_help()
   local buf = api.nvim_create_buf(false, true)
-  local border_buf = api.nvim_create_buf(false, true)
 
   api.nvim_buf_set_option(buf, 'bufhidden', 'wipe')
   api.nvim_buf_set_option(buf, 'filetype', 'whid')
@@ -56,7 +55,7 @@ function M.show_help()
 
 
   local start_line = 2
-  for key,value in ipairs(bindings) do 
+  for key,value in ipairs(bindings) do
       api.nvim_buf_set_lines(buf, start_line + key, start_line + key + 1, false, value)
       api.nvim_buf_add_highlight(buf, -1, 'NerveuxHelpText', start_line + key, 1, 6)
   end

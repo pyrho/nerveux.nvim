@@ -1,5 +1,4 @@
 local M = {}
-local l = require "nerveux.log"
 local actions = require("telescope.actions")
 local finders = require("telescope.finders")
 local pickers = require("telescope.pickers")
@@ -44,9 +43,9 @@ function M.get_all_zettels(opts, callback)
   local job = Job:new{command = opts.neuron_cmd, args = job_args}
   job:start()
 
-  job:after_failure(function(j, code, signal) print("Error!") end)
+  job:after_failure(function() print("Error!") end)
 
-  job:after_success(function(j, code, signal)
+  job:after_success(function(j)
     local lines = j:result()
 
     -- We need to defer this call because `vim.fn.json_decode`
@@ -68,7 +67,6 @@ end
 
 --- Search
 function M.search_zettel(opts)
-  local function trim(s) return (s:gsub("^%s*(.-)%s*$", "%1")) end
 
   opts.cwd = opts.cwd and vim.fn.expand(opts.cwd) or vim.loop.cwd()
 
@@ -94,13 +92,13 @@ function M.search_zettel(opts)
     return deets
   end
 
-  local results = M.get_all_zettels({
+  M.get_all_zettels({
     uplinks_of = opts.uplinks_of,
     backlinks_of = opts.backlinks_of,
     neuron_dir = nerveux_config.neuron_dir,
     neuron_cmd = nerveux_config.neuron_cmd,
     use_cache = nerveux_config.use_cache
-  }, function(error, results)
+  }, function(_, results)
     pickers.new({
       attach_mappings = function(_, map)
         map("i", "<tab>", function(prompt_bufnr)

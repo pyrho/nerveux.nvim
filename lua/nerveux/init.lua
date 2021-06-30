@@ -22,7 +22,7 @@ end
 function nerveux.add_all_virtual_titles(buf, is_overlay)
   local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, true)
   for ln, line in ipairs(lines) do
-    nerveux.add_virtual_title_current_line(buf, ln, line, is_overlay, #lines)
+    nerveux.add_virtual_title_current_line(buf, ln, line, is_overlay)
   end
 end
 
@@ -31,7 +31,7 @@ local function query_id(id, callback)
 
   if config.use_cache then table.insert(job_args, "--cached") end
 
-  local query_job = Job:new{
+  Job:new{
     command = config.neuron_cmd,
     args = job_args,
     cwd = config.neuron_dir,
@@ -44,8 +44,7 @@ local function query_id(id, callback)
   }:start()
 end
 
-function nerveux.add_virtual_title_current_line(buf, ln, line, is_overlay,
-                                                nb_lines)
+function nerveux.add_virtual_title_current_line(buf, ln, line, is_overlay)
   if type(line) ~= "string" then return end
   local id = u.match_link(line)
   if id == nil then return end
@@ -96,13 +95,13 @@ function nerveux.add_virtual_title_current_line(buf, ln, line, is_overlay,
       end
     end)()
 
-    -- This is called on `BufWrite` so this gets executed on `:wq` but has 
+    -- This is called on `BufWrite` so this gets executed on `:wq` but has
     -- an async call to `neuron`.
     -- When the async calls back, the buffer is no longer visible so an
     -- error is thrown because it seems you can't add extmarks to a hidden buffer (which
     -- makes sense).
     -- This check helps with this issue.
-    -- We need to add `+ 0` here to cast buf as number, otherwise the call to 
+    -- We need to add `+ 0` here to cast buf as number, otherwise the call to
     -- bufwinnr always returns -1 because the string is not valid
     if vim.fn.bufwinnr(buf + 0) ~= -1 then
       vim.api.nvim_buf_set_extmark(buf, ns, ln - 1, start_col_patched - 1,
