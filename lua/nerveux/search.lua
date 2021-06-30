@@ -1,11 +1,12 @@
 local M = {}
-local actions = require("telescope.actions")
-local finders = require("telescope.finders")
-local pickers = require("telescope.pickers")
-local previewers = require("telescope.previewers")
-local conf = require("telescope.config").values
-local Job = require("plenary.job")
-local entry_display = require("telescope.pickers.entry_display")
+local l = require "nerveux.log"
+local actions = require "telescope.actions"
+local finders = require "telescope.finders"
+local pickers = require "telescope.pickers"
+local previewers = require "telescope.previewers"
+local conf = require "telescope.config".values
+local Job = require "plenary.job"
+local entry_display = require "telescope.pickers.entry_display"
 local u = require "nerveux.utils"
 local nerveux_config = require "nerveux.config"
 
@@ -54,6 +55,10 @@ function M.get_all_zettels(opts, callback)
       local parsed_results = vim.fn.json_decode(lines)
 
       if opts.backlinks_of or opts.uplinks_of then
+        if parsed_results[1] == nil or parsed_results[1].result == nil then
+          l.error("Results malformed: " .. vim.inspect(parsed_results))
+          return
+        end
         return callback(nil, vim.tbl_map(function(e) return e[2] end,
                                          parsed_results[1].result))
       else

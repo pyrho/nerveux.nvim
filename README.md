@@ -1,6 +1,6 @@
 # Nerveux
 
-A neovim lua plugin to interact with [neuron](http://neuron.zettel.page).
+A neovim lua plugin to interact with [neuron](http://neuron.zettel.page) (tested with version 1.9.31.0).
 
 ![nerveux_normal](https://github.com/pyrho/static-imgs/raw/master/nerveux.jpeg)
 See [this](https://asciinema.org/a/422065) asciinema recording for a little demo.
