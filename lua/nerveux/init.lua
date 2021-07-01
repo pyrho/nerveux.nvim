@@ -46,55 +46,13 @@ end
 
 function nerveux.add_virtual_title_current_line(buf, ln, line, is_overlay)
   if type(line) ~= "string" then return end
-  local id = u.match_link(line)
-  if id == nil then return end
-  local start_col, end_col = u.find_link(line)
-  local is_folgezettel = string.sub(line, end_col, end_col) == "#"
-  local hl = (function()
-    if is_folgezettel then
-      return config.virtual_title_hl_folge
-    else
-      return config.virtual_title_hl
-    end
-  end)()
+  local all_links = u.get_all_link_indices(line)
 
-  query_id(id, function(json)
-    if type(json) == "userdata" then return end
-    if json == nil then return end
-    if json.error then return end
+  local all_titles = {}
+  local nb_resolved = 0
 
-    local title = (function()
-      local is_at_eol = #line == end_col
-
-      if is_overlay then
-        do
-          local end_col_offset = end_col - 1
-          local start_col_offset = start_col - 2
-          return
-              u.rpad(json.Title, end_col_offset - start_col_offset, is_at_eol)
-        end
-      else
-        return json.Title
-      end
-    end)()
-
-    local extmark_opts = {end_col = end_col, virt_text = {{title, hl}}}
-
-    if is_overlay then
-      extmark_opts.virt_text_pos = "overlay"
-      extmark_opts.virt_text_hide = true
-    end
-
-    -- This is needed because there seems to be a bug in
-    -- `virt_text_pos="overlay" when the virtual text starts at column 0`
-    local start_col_patched = (function()
-      if start_col == 1 then
-        return 2
-      else
-        return start_col
-      end
-    end)()
-
+  -- Final callback, once all the IDs have be queried
+  local function on_done(all)
     -- This is called on `BufWrite` so this gets executed on `:wq` but has
     -- an async call to `neuron`.
     -- When the async calls back, the buffer is no longer visible so an
@@ -103,11 +61,91 @@ function nerveux.add_virtual_title_current_line(buf, ln, line, is_overlay)
     -- This check helps with this issue.
     -- We need to add `+ 0` here to cast buf as number, otherwise the call to
     -- bufwinnr always returns -1 because the string is not valid
-    if vim.fn.bufwinnr(buf + 0) ~= -1 then
-      vim.api.nvim_buf_set_extmark(buf, ns, ln - 1, start_col_patched - 1,
-                                   extmark_opts)
+    if vim.fn.bufwinnr(buf + 0) == -1 then return end
+
+    if is_overlay then
+      for _, v in ipairs(all) do
+        local start_col_patched, _, extmark_opts = unpack(v)
+        vim.api.nvim_buf_set_extmark(buf, ns, ln - 1, start_col_patched - 1,
+                                     extmark_opts)
+      end
+    else
+      local all_only_titles = {}
+      for _, v in ipairs(all) do
+        local _, title = unpack(v)
+        table.insert(all_only_titles, title)
+      end
+      -- We want to display all the titles as virutal text
+      -- at the end of the line
+      local extmarkopts = {
+        end_col = 0,
+        virt_text = {
+          {table.concat(all_only_titles, ","), config.virtual_title_hl}
+        }
+      }
+
+      vim.api.nvim_buf_set_extmark(buf, ns, ln - 1, 1, extmarkopts)
     end
-  end)
+  end
+
+  for k, v in ipairs(all_links) do
+    table.insert(all_titles, "")
+    local start_col, end_col, id, is_folgezettel = unpack(v)
+    local hl = (function()
+      if is_folgezettel then
+        return config.virtual_title_hl_folge
+      else
+        return config.virtual_title_hl
+      end
+    end)()
+
+    query_id(id, function(json)
+      nb_resolved = nb_resolved + 1
+      if type(json) == "userdata" then return end
+      if json == nil then return end
+      if json.error then return end
+
+      local title = (function()
+        local is_at_eol = #line == end_col
+
+        if is_overlay then
+          do
+            return u.rpad(json.Title, end_col + 1 - start_col, is_at_eol)
+          end
+        else
+          return json.Title
+        end
+      end)()
+
+      local extmark_opts = nil
+
+      if is_overlay then
+        extmark_opts = {
+          virt_text_pos = "overlay",
+          virt_text_hide = true,
+          end_col = end_col,
+          virt_text = {{title, hl}}
+        }
+      end
+
+      -- This is needed because there seems to be a bug in
+      -- `virt_text_pos="overlay" when the virtual text starts at column 0`
+      local start_col_patched = (function()
+        if start_col == 1 then
+          return 2
+        else
+          return start_col
+        end
+      end)()
+
+      all_titles[k] = {start_col_patched, title, extmark_opts}
+
+      -- All the links have been queried, call the final callback to actually
+      -- display the titles
+      if nb_resolved == #all_links then on_done(all_titles) end
+    end)
+  end
+
 end
 
 local function setup_autocmds()
