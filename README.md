@@ -117,6 +117,18 @@ require 'nerveux'.setup {
 }
 ```
 
+## Troubleshooting
+
+You can run `:checkhealth nerveux` to run a basic diagnostic.
+
+You can also start neovim like this:
+
+```sh
+$> DEBUG_NERVEUX=1 nvim a_zettel.md
+```
+
+This will write debug logs to the following file: `~/.cache/nvim/nerveux.log`.
+
 ## Similar plugins
 
 - [oberblastmeister/neuron.nvim](https://github.com/oberblastmeister/neuron.nvim)
