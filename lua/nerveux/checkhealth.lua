@@ -63,5 +63,4 @@ M.checks = function()
 
 end
 
-dump()
 return M
