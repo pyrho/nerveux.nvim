@@ -365,9 +365,14 @@ nerveux.setup = function(opts)
   if opts.create_default_mappings then
     vim.cmd("augroup NerveuxMappings")
     vim.cmd("autocmd!")
+
+    -- Paths with spaces need to be escaped otherwise the autocommand will
+    -- not register appropriately
+    local escaped_path = config.neuron_dir:gsub(" ", "\\ ")
+
     vim.cmd(string.format(
                 [[autocmd BufRead %s/*.md lua require'nerveux'.setup_default_mappings()]],
-                config.neuron_dir))
+                escaped_path))
     vim.cmd("augroup END")
   end
 
