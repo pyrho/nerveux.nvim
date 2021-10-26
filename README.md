@@ -129,6 +129,11 @@ $> DEBUG_NERVEUX=1 nvim a_zettel.md
 
 This will write debug logs to the following file: `~/.cache/nvim/nerveux.log`.
 
+### Known issues
+
+- Hiding the (see #3) zettel link with virtual text will not work if the opening brackets start on the first column.
+  As far as I known this is an issue with nvim itself.
+
 ## Similar plugins
 
 - [oberblastmeister/neuron.nvim](https://github.com/oberblastmeister/neuron.nvim)
