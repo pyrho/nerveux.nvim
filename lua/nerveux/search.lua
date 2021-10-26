@@ -19,7 +19,7 @@ local nerveux_config = require "nerveux.config"
 -- @field opts.neuron_cmd (string) the command to run to execute neuron
 -- @param callback The function to call when the results are ready
 --        In the form callback(error, table_of_results)
-function M.get_all_zettels(opts, callback)
+local function get_all_zettels(opts, callback)
   opts = opts or {}
   opts.uplinks_of = opts.uplinks_of or false
   opts.backlinks_of = opts.backlinks_of or false
@@ -97,7 +97,7 @@ function M.search_zettel(opts)
     return deets
   end
 
-  M.get_all_zettels({
+  get_all_zettels({
     uplinks_of = opts.uplinks_of,
     backlinks_of = opts.backlinks_of,
     neuron_dir = nerveux_config.neuron_dir,
