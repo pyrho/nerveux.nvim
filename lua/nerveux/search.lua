@@ -83,18 +83,20 @@ function M.search_zettel(opts)
   }
 
   local maker = function(deets)
+    local show_tags = function(entry)
+      return table.concat(u.map(entry["Meta"]["tags"], function(tag) return "#" .. tag end), " ")
+    end
     deets.valid = true
     deets.display = function(entry)
       return displayer {
-        table.concat(u.map(entry["Meta"]["tags"],
-                           function(tag) return "#" .. tag end), ","),
+        show_tags(entry),
         entry["Title"]
       }
     end
     deets.value = vim.fn.resolve(string.format("%s/%s",
                                                nerveux_config.neuron_dir,
                                                deets["Path"]))
-    deets.ordinal = deets["Title"]
+    deets.ordinal = show_tags(deets) .. deets["Title"]
     return deets
   end
 
