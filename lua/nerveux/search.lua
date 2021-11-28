@@ -1,6 +1,7 @@
 local M = {}
 local l = require "nerveux.log"
 local actions = require "telescope.actions"
+local action_state = require "telescope.actions.state"
 local finders = require "telescope.finders"
 local pickers = require "telescope.pickers"
 local previewers = require "telescope.previewers"
@@ -107,7 +108,7 @@ function M.search_zettel(opts)
     pickers.new({
       attach_mappings = function(_, map)
         map("i", "<tab>", function(prompt_bufnr)
-          local entry = actions.get_selected_entry()
+          local entry = action_state.get_selected_entry()
           actions.close(prompt_bufnr)
           vim.api.nvim_put({"[[" .. entry.ID .. "]]"}, "c", true, true)
         end)
