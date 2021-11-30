@@ -19,13 +19,6 @@ nerveux.kill_daemon = function()
   end
 end
 
-function nerveux.add_all_virtual_titles(buf, is_overlay)
-  local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, true)
-  for ln, line in ipairs(lines) do
-    nerveux.add_virtual_title_current_line(buf, ln, line, is_overlay)
-  end
-end
-
 local function query_id(id, callback)
   local job_args = {"query", "--id", id}
 
@@ -44,8 +37,9 @@ local function query_id(id, callback)
   }:start()
 end
 
-function nerveux.add_virtual_title_current_line(buf, ln, line, is_overlay)
+function nerveux.add_virtual_title_to_line(buf, ln, line, is_overlay)
   if type(line) ~= "string" then return end
+
   local all_links = u.get_all_link_indices(line)
 
   local all_titles = {}
@@ -90,7 +84,7 @@ function nerveux.add_virtual_title_current_line(buf, ln, line, is_overlay)
 
   for k, v in ipairs(all_links) do
     table.insert(all_titles, "")
-    local start_col, end_col, id, is_folgezettel = unpack(v)
+    local start_col, end_col, id, is_folgezettel, link_alias = unpack(v)
     local hl = (function()
       if is_folgezettel then
         return config.virtual_title_hl_folge
@@ -107,13 +101,14 @@ function nerveux.add_virtual_title_current_line(buf, ln, line, is_overlay)
 
       local title = (function()
         local is_at_eol = #line == end_col
+        local title_ = link_alias or json.Title
 
         if is_overlay then
           do
-            return u.rpad(json.Title, end_col + 1 - start_col, is_at_eol)
+            return u.rpad(title_, end_col + 1 - start_col, is_at_eol)
           end
         else
-          return json.Title
+          return title_
         end
       end)()
 
@@ -248,9 +243,18 @@ function nerveux.open_zettel_under_cursor()
   end)
 end
 
+--- Update the Virtual titles for the whole buffer.
+-- @param buf the buffer number to update
+-- @param is_overlay whether to display title inline
 function nerveux.update_virtual_titles(buf, is_overlay)
+
+  -- Clear all the current marks
   vim.api.nvim_buf_clear_namespace(buf, ns, 0, -1)
-  nerveux.add_all_virtual_titles(buf, is_overlay)
+
+  local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, true)
+  for ln, line in ipairs(lines) do
+    nerveux.add_virtual_title_to_line(buf, ln, line, is_overlay)
+  end
 end
 
 nerveux._LAST_EDITED_ZETTEL = nil

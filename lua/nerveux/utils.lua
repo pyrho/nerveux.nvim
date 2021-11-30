@@ -1,20 +1,23 @@
 local utils = {}
+local l = require "nerveux.log"
 local Job = require "plenary.job"
 
-local DOUBLE_LINK_RE = "%[%[(%w+)|?[%g%s]-%]%]#?"
+local DOUBLE_LINK_RE = "%[%[(%w+)|?([%g%s]-)%]%]#?"
 local DOUBLE_LINK_RE_NOCAP = "%[%[[%g%s]-%]%]#?"
 
 function utils.match_link(s) return s:match(DOUBLE_LINK_RE) end
 
---- Returns a table containing all the IDs and they positions and if
+--- Given a line, return a table with all links with metadata.
+-- Returns a table containing all the IDs and they positions and if
 -- they are folgezettels
+-- @param line is a string
+-- @return a table with all the zettels links contained in that line, containing
+--         the start and end indices of the match, the zettel's ID and a boolean
+--         indicating whether this is a folgezettel link.
+--         If a link alias was present it will also be included.
 function utils.get_all_link_indices(line)
   local function get_all_ids_from_line(line_)
     return line_:gmatch(DOUBLE_LINK_RE_NOCAP)
-  end
-
-  local function remove_link_decorations(match_)
-    return match_:gsub(DOUBLE_LINK_RE, "%1")
   end
 
   local matches = get_all_ids_from_line(line)
@@ -23,9 +26,11 @@ function utils.get_all_link_indices(line)
   for match in matches do
     local start_ix, end_ix = line:find(match, start, true)
     local is_folgezettel = string.sub(line, end_ix, end_ix) == "#"
-    local id = remove_link_decorations(match)
 
-    table.insert(indices, {start_ix, end_ix, id, is_folgezettel })
+    local _, _, id, link_alias = match:find(DOUBLE_LINK_RE)
+    if link_alias == nil or #link_alias == 0 then link_alias = nil end
+
+    table.insert(indices, {start_ix, end_ix, id, is_folgezettel, link_alias})
     start = end_ix
   end
 
