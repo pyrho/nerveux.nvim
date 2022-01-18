@@ -165,16 +165,16 @@ local function setup_autocmds()
     --     string.format([[au BufEnter %s lua require'nerveux'.update_virtual_titles(vim.fn.expand("<abuf>"), true)]], pathpattern)
     -- )
     vim.cmd(string.format(
-                [[au BufRead %s lua require'nerveux'.update_virtual_titles(vim.fn.expand("<abuf>"), true)]],
+                [[au BufRead %s lua require'nerveux'.update_virtual_titles(true)]],
                 pathpattern))
     vim.cmd(string.format(
-                [[au InsertLeave %s lua require'nerveux'.update_virtual_titles(vim.fn.expand("<abuf>"), true)]],
+                [[au InsertLeave %s lua require'nerveux'.update_virtual_titles(true)]],
                 pathpattern))
     vim.cmd(string.format(
-                [[ au BufWrite %s lua require'nerveux'.update_virtual_titles(vim.fn.expand("<abuf>"),true) ]],
+                [[ au BufWrite %s lua require'nerveux'.update_virtual_titles(true) ]],
                 pathpattern))
     vim.cmd(string.format(
-                [[ au InsertEnter %s lua require'nerveux'.update_virtual_titles(vim.fn.expand("<abuf>"),false) ]],
+                [[ au InsertEnter %s lua require'nerveux'.update_virtual_titles(false) ]],
                 pathpattern, ns))
   end
 
@@ -248,7 +248,8 @@ function nerveux.open_zettel_under_cursor()
   end)
 end
 
-function nerveux.update_virtual_titles(buf, is_overlay)
+function nerveux.update_virtual_titles(is_overlay)
+  local buf = vim.api.nvim_get_current_buf()
   vim.api.nvim_buf_clear_namespace(buf, ns, 0, -1)
   nerveux.add_all_virtual_titles(buf, is_overlay)
 end
