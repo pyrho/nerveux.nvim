@@ -1,6 +1,7 @@
 # Nerveux
 
-A neovim lua plugin to interact with [neuron](http://neuron.zettel.page) (tested with version 1.9.31.0).
+A neovim lua plugin to interact with [neuron](http://neuron.zettel.page) (tested with neovim v0.7.0-dev+1033-g51b432a7d and 
+neuron version 1.9.35.3).
 
 ![nerveux_normal](https://raw.githubusercontent.com/pyrho/static-imgs/c4ed4fd7844b2306d228128540dc290e75b221ff/nerveux.jpeg)
 See [this](https://asciinema.org/a/422065) asciinema recording for a little demo.
@@ -9,7 +10,7 @@ See [this](https://asciinema.org/a/422065) asciinema recording for a little demo
 
 - Display zettle titles inline via virtual text overlays
     - in `insert` mode, the virtual text is place at the end of line
-- Search Zettels and their content with [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim)
+- Search Zettels and their content (including tags) with [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim)
 - Cached queries via neuron daemon (for moar speed!)
     - daemon lifecycle is handled by the plugin
 
