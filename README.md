@@ -1,4 +1,9 @@
+# ⚠️ This repo is unmaintained 
+
+I've migrated from neuron to [zk](https://github.com/mickael-menu/zk) and it's great neovim plugin [zk.nvim](https://github.com/mickael-menu/zk-nvim).
+
 # Nerveux
+
 
 A neovim lua plugin to interact with [neuron](http://neuron.zettel.page) (tested with neovim v0.7.0-dev+1033-g51b432a7d and 
 neuron version 1.9.35.3).
